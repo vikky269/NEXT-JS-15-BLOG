@@ -3,6 +3,7 @@ import { client, urlFor } from '../../lib/sanity';
 import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
 
+// Fetch the data from Sanity
 async function getData(slug: string) {
   const query = `
     *[_type == 'blog' && slug.current == $slug][0] {
@@ -13,11 +14,19 @@ async function getData(slug: string) {
     }
   `;
 
-  const data = await client.fetch(query, { slug }); // Pass slug as a parameter
+  const data = await client.fetch(query, { slug });
   return data;
 }
 
-const BlogArticle = async ({ params }: { params: { slug: string } }) => {
+// Define the expected type of the props for the dynamic route
+interface BlogArticleProps {
+  params: {
+    slug: string;
+  };
+}
+
+// Dynamic route component
+const BlogArticle = async ({ params }: BlogArticleProps) => {
   const data: FullBlog = await getData(params.slug);
 
   return (
@@ -48,3 +57,4 @@ const BlogArticle = async ({ params }: { params: { slug: string } }) => {
 };
 
 export default BlogArticle;
+
