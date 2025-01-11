@@ -1,45 +1,50 @@
-import { FullBlog } from '@/app/lib/interface'
-import {client, urlFor} from '../../lib/sanity'
-import Image from 'next/image'
-import {PortableText} from '@portabletext/react'
+import { FullBlog } from '@/app/lib/interface';
+import { client, urlFor } from '../../lib/sanity';
+import Image from 'next/image';
+import { PortableText } from '@portabletext/react';
 
-async function getData(slug:string){
-    const query = ` *[_type == 'blog' && slug.current == "${slug}" ]{
-   "currentSlug":slug.current,
-     title,
-     content,
-     titleImage
- } [0]`
+async function getData(slug: string) {
+  const query = `
+    *[_type == 'blog' && slug.current == $slug][0] {
+      "currentSlug": slug.current,
+      title,
+      content,
+      titleImage
+    }
+  `;
 
- const data = await client.fetch(query)
- return data
+  const data = await client.fetch(query, { slug }); // Pass slug as a parameter
+  return data;
 }
 
-const blogArticle = async ({params}: {params: {slug:string}}) => {
-     const data: FullBlog = await getData(params.slug)
-    return  (
-        <div className='mt-8'>
-            <h1>
-                <span className='block text-base text-center text-primary font-semibold tracking-wide uppercase'>Jan marshall - Blog</span>
-                <span className='mt-2 block text-3xl text-center leading-8 font-bold tracking-tight sm:text-4xl'>{data.title}</span>
-            </h1>
+const BlogArticle = async ({ params }: { params: { slug: string } }) => {
+  const data: FullBlog = await getData(params.slug);
 
-            <Image 
-            src={urlFor(data.titleImage).url()} 
-            alt='' 
-            width={800}
-            height={800} 
-            priority
-            className='object-cover mt-8 rounded-lg'
-            />
+  return (
+    <div className="mt-8">
+      <h1>
+        <span className="block text-base text-center text-primary font-semibold tracking-wide uppercase">
+          Jan Marshall - Blog
+        </span>
+        <span className="mt-2 block text-3xl text-center leading-8 font-bold tracking-tight sm:text-4xl">
+          {data.title}
+        </span>
+      </h1>
 
-            <div className='mt-16 prose prose-blue prose-lg dark:prose-invert prose-headings:underline'>
-                <PortableText value={data.content} />
-            </div>
-        </div>
-    )
-    
-    
-}
+      <Image
+        src={urlFor(data.titleImage).url()}
+        alt=""
+        width={800}
+        height={800}
+        priority
+        className="object-cover mt-8 rounded-lg"
+      />
 
-export default blogArticle;
+      <div className="mt-16 prose prose-blue prose-lg dark:prose-invert prose-headings:underline">
+        <PortableText value={data.content} />
+      </div>
+    </div>
+  );
+};
+
+export default BlogArticle;
