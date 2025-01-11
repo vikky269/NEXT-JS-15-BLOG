@@ -18,16 +18,10 @@ async function getData(slug: string) {
   return data;
 }
 
-// Define the expected type of the props for the dynamic route
-interface BlogArticleProps {
-  params: {
-    slug: string;
-  };
-}
-
-// Dynamic route component
-const BlogArticle = async ({ params }: BlogArticleProps) => {
-  const data: FullBlog = await getData(params.slug);
+// Adjust props interface to match Next.js requirements
+const BlogArticle = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const resolvedParams = await params; // Resolve the params if they are a Promise
+  const data: FullBlog = await getData(resolvedParams.slug);
 
   return (
     <div className="mt-8">
@@ -57,4 +51,3 @@ const BlogArticle = async ({ params }: BlogArticleProps) => {
 };
 
 export default BlogArticle;
-
