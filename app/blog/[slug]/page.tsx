@@ -3,6 +3,8 @@ import { client, urlFor } from '../../lib/sanity';
 import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
 
+export const revalidate = 30
+
 // Fetch the data from Sanity
 async function getData(slug: string) {
   const query = `
